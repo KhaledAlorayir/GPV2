@@ -1,3 +1,4 @@
+//imports
 import React, { useState, useRef } from "react";
 import { StyleSheet, Text, View, Dimensions } from "react-native";
 import * as tf from "@tensorflow/tfjs";
@@ -6,22 +7,27 @@ import {
   bundleResourceIO,
 } from "@tensorflow/tfjs-react-native";
 import { Camera } from "expo-camera";
+
+//components
 import PlaySound from "./components/PlaySound";
+import Result from "./components/Result";
 
+//global consts
 const TensorCamera = cameraWithTensors(Camera);
-
 const H = Platform.OS === "ios" ? 480 : 64;
 const W = Platform.OS === "ios" ? 270 : 64;
 const CW = Dimensions.get("window").width;
 const CH = CW / (9 / 16);
 
 export default function App() {
+  //App state
   const [tfReady, setTfReady] = useState(false);
   const [prediction, setPrediction] = useState(null);
   const [model, setModel] = useState();
   const rafid = useRef(null);
-  const labels = ["10", "50", "100"];
+  const labels = ["0", "5", "10", "50", "100"];
 
+  //Load Model
   const start = async () => {
     rafid.current = null;
     await Camera.requestCameraPermissionsAsync();
@@ -38,11 +44,10 @@ export default function App() {
     setTfReady(true);
   };
 
+  //call start onload, clear loop on destroy
   React.useEffect(() => {
     start();
-  }, []);
 
-  React.useEffect(() => {
     return () => {
       if (rafid.current != null && rafid.current !== 0) {
         cancelAnimationFrame(rafid.current);
@@ -51,6 +56,7 @@ export default function App() {
     };
   }, []);
 
+  //handle camera frames
   const CameraStreamHandler = (imgs, update_preview, gl) => {
     const loop = async () => {
       if (rafid.current === 0) {
@@ -76,8 +82,8 @@ export default function App() {
             const max = Math.max(...data);
             const label_index = data.indexOf(max);
             const accurecy = max * 100;
-
-            if (accurecy >= 99) {
+            //console.log(accurecy);
+            if (accurecy >= 95) {
               setPrediction(labels[label_index]);
             }
           }
@@ -88,6 +94,7 @@ export default function App() {
     loop();
   };
 
+  //loading ui
   if (!tfReady) {
     return (
       <View style={styles.loading}>
@@ -95,7 +102,7 @@ export default function App() {
       </View>
     );
   }
-
+  //App ui
   return (
     <View style={styles.container}>
       <TensorCamera
@@ -107,14 +114,13 @@ export default function App() {
         resizeDepth={3}
         onReady={CameraStreamHandler}
       />
-      <View style={styles.resultCont}>
-        <Text style={styles.resultText}>{prediction}</Text>
-      </View>
+      <Result prediction={prediction} />
       <PlaySound prediction={prediction} />
     </View>
   );
 }
 
+//styling
 const styles = StyleSheet.create({
   container: {
     position: "relative",

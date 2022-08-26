@@ -9,7 +9,9 @@ const PlaySound = ({ prediction }) => {
     if (prediction) {
       let x = null;
 
-      if (prediction === "10") {
+      if (prediction === "5") {
+        x = await Audio.Sound.createAsync(require("../sound/5.mp3"));
+      } else if (prediction === "10") {
         x = await Audio.Sound.createAsync(require("../sound/10.mp3"));
       } else if (prediction === "50") {
         x = await Audio.Sound.createAsync(require("../sound/50.mp3"));
