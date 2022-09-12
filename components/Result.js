@@ -24,8 +24,9 @@ const styles = StyleSheet.create({
   },
   resultText: {
     fontSize: 30,
-    backgroundColor: "red",
+    backgroundColor: "black",
     padding: 5,
+    color: "white",
   },
 });
 
