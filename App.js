@@ -9,6 +9,7 @@ import { Camera } from "expo-camera";
 
 import PlaySound from "./components/PlaySound";
 import Result from "./components/Result";
+import LoadingScreen from "./components/LoadingScreen";
 
 const TensorCamera = cameraWithTensors(Camera);
 const H = Platform.OS === "ios" ? 480 : 64;
@@ -87,11 +88,7 @@ export default function App() {
   };
 
   if (!tfReady) {
-    return (
-      <View style={styles.loading}>
-        <Text style={styles.loading_text}>Loading..</Text>
-      </View>
-    );
+    return <LoadingScreen />;
   }
   return (
     <View style={styles.container}>
@@ -121,14 +118,5 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     zIndex: 1,
-  },
-  loading: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  loading_text: {
-    fontSize: 30,
-    fontWeight: "bold",
   },
 });
